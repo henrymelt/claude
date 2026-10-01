@@ -1,32 +1,30 @@
-# React + TypeScript + Vite
+# Personal Ledger
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A personal finance tracker built on **double-entry bookkeeping**. Every transaction is a balanced journal entry: total debits equal total credits, so the books always satisfy *Assets = Liabilities + Equity*.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Chart of accounts**: a hierarchical tree of Assets (1xxx), Liabilities (2xxx), Equity (3xxx), Income (4xxx) and Expenses (5xxx) with rolled-up balances, normal-balance indicators, search, type filters, sub-accounts, archiving and deletion of unused accounts.
+- **Journal**: multi-line (split) entries with live debit/credit totals, a one-click "balance" helper and strict validation. The list uses the traditional journal layout, with credits indented under debits.
+- **General ledger**: per-account (or per-group) postings with a running balance, counter-accounts, a date-range opening balance and a T-account summary.
+- **Reports**: trial balance, balance sheet (with unclosed net income) and income statement (with savings rate), all for any date or period.
+- **Data**: stored in the browser's `localStorage`. JSON export/import, sample data, currency selection.
 
-## React Compiler
+Amounts are stored as integer cents, so there is no floating-point drift.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Development
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev     # http://localhost:5173
+npm test        # ledger logic unit tests (Vitest)
+npm run lint
+npm run build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Stack: React 19, TypeScript, Vite, Tailwind CSS v4.
+
+## Layout
+
+- `src/lib/`: framework-free accounting core (`ledger.ts`), money parsing and formatting, the default chart and sample data, and the persisted store
+- `src/components/`: the chart of accounts, journal, entry form, ledger and report views
