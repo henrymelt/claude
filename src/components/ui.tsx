@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import type { AccountType } from '../lib/types'
 
@@ -100,5 +100,59 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
       <p className="text-sm font-medium text-slate-900">{title}</p>
       {children && <div className="mt-2 text-sm text-slate-500">{children}</div>}
     </div>
+  )
+}
+
+/** Two-step button: the first click arms it, the second click within a few seconds performs the action. */
+export function ConfirmButton({
+  children,
+  confirmLabel = 'Click again to confirm',
+  onConfirm,
+  ...props
+}: Omit<Parameters<typeof Button>[0], 'onClick'> & { confirmLabel?: string; onConfirm: () => void }) {
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    if (!armed) return
+    const t = setTimeout(() => setArmed(false), 4000)
+    return () => clearTimeout(t)
+  }, [armed])
+  return (
+    <Button
+      {...props}
+      className={`${props.className ?? ''} ${armed ? '!bg-rose-600 !text-white !ring-rose-600' : ''}`}
+      onClick={() => (armed ? onConfirm() : setArmed(true))}
+    >
+      {armed ? confirmLabel : children}
+    </Button>
+  )
+}
+
+export function ConfirmDialog({
+  title,
+  children,
+  confirmLabel,
+  danger,
+  onConfirm,
+  onCancel,
+}: {
+  title: string
+  children: ReactNode
+  confirmLabel: string
+  danger?: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  return (
+    <Modal title={title} onClose={onCancel}>
+      <div className="space-y-5 text-sm text-slate-700">
+        <div className="space-y-2">{children}</div>
+        <div className="flex justify-end gap-2">
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button variant={danger ? 'danger' : 'primary'} className={danger ? '!bg-rose-600 !text-white' : ''} onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </Modal>
   )
 }

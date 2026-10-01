@@ -6,7 +6,7 @@ import { ACCOUNT_TYPE_LABELS, ACCOUNT_TYPES, NORMAL_BALANCE } from '../lib/types
 import type { Account, AccountType, LedgerData } from '../lib/types'
 import { AccountForm } from './AccountForm'
 import { TYPE_DOT } from './typeColors'
-import { Button, Card, inputClass, TypeBadge } from './ui'
+import { Button, Card, ConfirmButton, inputClass, TypeBadge } from './ui'
 
 type Editing = { account?: Account; parentId?: string } | null
 
@@ -59,11 +59,6 @@ export function ChartOfAccounts({
       else n.add(id)
       return n
     })
-
-  const remove = (a: Account) => {
-    if (!confirm(`Delete account ${a.code} · ${a.name}? This cannot be undone.`)) return
-    dispatch({ type: 'deleteAccount', id: a.id })
-  }
 
   const netWorth = summary.assets - summary.liabilities
 
@@ -195,9 +190,15 @@ export function ChartOfAccounts({
                           </Button>
                         )}
                         {deletable && (
-                          <Button size="sm" variant="ghost" className="text-rose-600" onClick={() => remove(a)}>
+                          <ConfirmButton
+                            size="sm"
+                            variant="ghost"
+                            className="text-rose-600"
+                            confirmLabel="Confirm delete"
+                            onConfirm={() => dispatch({ type: 'deleteAccount', id: a.id })}
+                          >
                             Delete
-                          </Button>
+                          </ConfirmButton>
                         )}
                       </div>
                     </td>

@@ -5,7 +5,7 @@ import { centsToInput, formatMoney, parseAmount } from '../lib/money'
 import { newId, today } from '../lib/store'
 import type { Account, JournalEntry } from '../lib/types'
 import { AccountSelect } from './AccountSelect'
-import { Button, Field, inputClass, Modal } from './ui'
+import { Button, ConfirmButton, Field, inputClass, Modal } from './ui'
 
 interface DraftLine {
   key: string
@@ -219,14 +219,9 @@ export function JournalEntryForm({
 
         <div className="flex items-center gap-2 pt-1">
           {onDelete && (
-            <Button
-              variant="danger"
-              onClick={() => {
-                if (confirm('Delete this journal entry?')) onDelete()
-              }}
-            >
+            <ConfirmButton variant="danger" confirmLabel="Click again to delete" onConfirm={onDelete}>
               Delete entry
-            </Button>
+            </ConfirmButton>
           )}
           <span className="ml-auto hidden text-xs text-slate-400 sm:inline">Ctrl/⌘ + Enter to save</span>
           <Button onClick={onClose}>Cancel</Button>

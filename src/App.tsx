@@ -5,10 +5,12 @@ import { ChartOfAccounts } from './components/ChartOfAccounts'
 import { Journal } from './components/Journal'
 import { JournalEntryForm } from './components/JournalEntryForm'
 import { Reports } from './components/Reports'
-import { Button } from './components/ui'
+import { Guide } from './components/Guide'
+import { Button, ConfirmDialog, inputClass, Modal } from './components/ui'
 import { emptyLedger, sampleEntries } from './lib/defaultChart'
+import { saveTextFile } from './lib/saveFile'
 import { isLedgerData, today, useLedger } from './lib/store'
-import type { JournalEntry } from './lib/types'
+import type { JournalEntry, LedgerData } from './lib/types'
 
 type Tab = 'accounts' | 'journal' | 'ledger' | 'reports'
 
@@ -19,6 +21,14 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'reports', label: 'Reports' },
 ]
 
+type Dialog =
+  | { kind: 'import'; data: LedgerData; fileName: string }
+  | { kind: 'importError'; fileName: string }
+  | { kind: 'sample' }
+  | { kind: 'reset' }
+  | { kind: 'export' }
+  | { kind: 'guide' }
+
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'INR', 'NZD', 'SGD']
 
 export default function App() {
@@ -28,46 +38,44 @@ export default function App() {
   const [editing, setEditing] = useState<JournalEntry | 'new' | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
+  const [dialog, setDialogState] = useState<Dialog | null>(null)
+  const [notice, setNotice] = useState('')
+  const setDialog = (d: Dialog | null) => {
+    setNotice('')
+    setDialogState(d)
+  }
 
   const openLedger = (id: string) => {
     setLedgerAccountId(id)
     setTab('ledger')
   }
 
-  const exportData = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `ledger-${today()}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+  const download = async () => {
+    const outcome = await saveTextFile(`ledger-${today()}.json`, JSON.stringify(data, null, 2))
+    setNotice(
+      outcome === 'saved'
+        ? 'Backup file saved.'
+        : outcome === 'declined'
+          ? 'Download cancelled.'
+          : "Download isn't available here. Use Copy JSON instead.",
+    )
   }
 
   const importData = async (file: File) => {
     try {
       const parsed: unknown = JSON.parse(await file.text())
       if (!isLedgerData(parsed)) throw new Error('not a ledger file')
-      if (confirm(`Replace current data with ${parsed.accounts.length} accounts and ${parsed.entries.length} entries from "${file.name}"?`))
-        dispatch({ type: 'replace', data: parsed })
+      setDialog({ kind: 'import', data: parsed, fileName: file.name })
     } catch {
-      alert('That file is not a valid ledger export.')
+      setDialog({ kind: 'importError', fileName: file.name })
     }
   }
 
-  const loadSample = () => {
-    if (data.entries.length && !confirm('Replace your journal entries with sample data? Your chart of accounts is kept.')) return
-    dispatch({ type: 'replace', data: { ...data, entries: sampleEntries() } })
-  }
-
-  const reset = () => {
-    if (confirm('Erase all accounts and entries and restore the default chart of accounts? Export first if you want a backup.'))
-      dispatch({ type: 'replace', data: emptyLedger() })
-  }
+  const startOwn = () => dispatch({ type: 'replace', data: { ...data, entries: [], sample: false } })
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <header style={{ top: 'env(safe-area-inset-top, 0px)' }} className="sticky z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 items-center justify-center rounded-lg bg-indigo-600 px-1.5 font-mono text-[11px] font-bold text-white">Dr|Cr</div>
@@ -91,6 +99,9 @@ export default function App() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
+            <Button variant="ghost" onClick={() => setDialog({ kind: 'guide' })}>
+              How it works
+            </Button>
             <Button variant="primary" onClick={() => setEditing('new')}>
               + Journal entry
             </Button>
@@ -105,9 +116,9 @@ export default function App() {
                     className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <MenuItem onClick={loadSample}>Load sample data</MenuItem>
-                    <MenuItem onClick={exportData}>Export to JSON</MenuItem>
-                    <MenuItem onClick={() => fileInput.current?.click()}>Import from JSON…</MenuItem>
+                    <MenuItem onClick={() => setDialog({ kind: 'sample' })}>Load sample data</MenuItem>
+                    <MenuItem onClick={() => setDialog({ kind: 'export' })}>Export backup…</MenuItem>
+                    <MenuItem onClick={() => fileInput.current?.click()}>Import backup…</MenuItem>
                     <div className="my-1 border-t border-slate-100" />
                     <label className="flex items-center justify-between px-3 py-1.5 text-slate-700" onClick={(e) => e.stopPropagation()}>
                       Currency
@@ -122,7 +133,7 @@ export default function App() {
                       </select>
                     </label>
                     <div className="my-1 border-t border-slate-100" />
-                    <MenuItem onClick={reset} danger>
+                    <MenuItem onClick={() => setDialog({ kind: 'reset' })} danger>
                       Reset everything
                     </MenuItem>
                   </div>
@@ -144,7 +155,23 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+        {data.sample && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p className="min-w-0 flex-1">
+              <b>You're viewing sample data.</b> Explore the accounts, journal and reports, then clear the examples to start
+              your own books. Your chart of accounts stays.
+            </p>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => setDialog({ kind: 'guide' })}>
+                How it works
+              </Button>
+              <Button size="sm" variant="primary" onClick={startOwn}>
+                Clear sample, start my ledger
+              </Button>
+            </div>
+          </div>
+        )}
         {tab === 'accounts' && <ChartOfAccounts data={data} dispatch={dispatch} onOpenLedger={openLedger} />}
         {tab === 'journal' && (
           <Journal data={data} onEdit={setEditing} onNew={() => setEditing('new')} onOpenLedger={openLedger} />
@@ -156,8 +183,106 @@ export default function App() {
       </main>
 
       <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-slate-400">
-        Data is stored only in this browser. Use Data → Export to back it up.
+        Your ledger is saved only in this browser. Use Data → Export backup to keep a copy.
       </footer>
+
+      {dialog?.kind === 'guide' && <Guide onClose={() => setDialog(null)} />}
+      {dialog?.kind === 'export' && (
+        <Modal title="Export backup" onClose={() => setDialog(null)} wide>
+          <div className="space-y-3 text-sm">
+            <p className="text-slate-600">
+              Your ledger as JSON ({data.accounts.length} accounts, {data.entries.length} entries). Copy it into a file named
+              something like <code className="font-mono">ledger-{today()}.json</code>, or download it directly.
+            </p>
+            <textarea
+              id="export-json"
+              readOnly
+              className={`${inputClass} h-64 font-mono text-xs`}
+              value={JSON.stringify(data, null, 2)}
+              onFocus={(e) => e.target.select()}
+            />
+            <div className="flex flex-wrap justify-end gap-2">
+              <span className="mr-auto self-center text-xs text-slate-500">{notice}</span>
+              <Button onClick={() => void download()}>Download file</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(
+                    () => setNotice('Copied to clipboard.'),
+                    () => (document.getElementById('export-json') as HTMLTextAreaElement | null)?.select(),
+                  )
+                }}
+              >
+                Copy JSON
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {dialog?.kind === 'import' && (
+        <ConfirmDialog
+          title="Import backup"
+          confirmLabel="Replace my data"
+          danger
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            dispatch({ type: 'replace', data: dialog.data })
+            setDialog(null)
+          }}
+        >
+          <p>
+            <b>{dialog.fileName}</b> contains {dialog.data.accounts.length} accounts and {dialog.data.entries.length} journal
+            entries.
+          </p>
+          <p>Importing replaces everything currently in this ledger.</p>
+        </ConfirmDialog>
+      )}
+      {dialog?.kind === 'importError' && (
+        <Modal title="Can't import this file" onClose={() => setDialog(null)}>
+          <div className="space-y-4 text-sm text-slate-700">
+            <p>
+              <b>{dialog.fileName}</b> isn't a ledger backup. Choose a JSON file created with <b>Data → Export backup</b>.
+            </p>
+            <div className="flex justify-end">
+              <Button onClick={() => setDialog(null)}>OK</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {dialog?.kind === 'sample' && (
+        <ConfirmDialog
+          title="Load sample data"
+          confirmLabel="Load sample data"
+          danger={data.entries.length > 0 && !data.sample}
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            dispatch({ type: 'replace', data: { ...data, entries: sampleEntries(), sample: true } })
+            setDialog(null)
+          }}
+        >
+          <p>Adds three months of example transactions: paychecks, rent, groceries, a car loan and more.</p>
+          {data.entries.length > 0 && !data.sample && (
+            <p className="font-medium text-rose-700">
+              This replaces your {data.entries.length} journal entries. Export a backup first if you want to keep them.
+            </p>
+          )}
+        </ConfirmDialog>
+      )}
+      {dialog?.kind === 'reset' && (
+        <ConfirmDialog
+          title="Reset everything"
+          confirmLabel="Erase and reset"
+          danger
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            dispatch({ type: 'replace', data: emptyLedger() })
+            setDialog(null)
+          }}
+        >
+          <p>Erases all journal entries and restores the default chart of accounts. Custom accounts are removed.</p>
+          <p>This can't be undone. Export a backup first if you might need this data.</p>
+        </ConfirmDialog>
+      )}
 
       {editing && (
         <JournalEntryForm

@@ -51,4 +51,6 @@ export interface LedgerData {
   currency: string
   accounts: Account[]
   entries: JournalEntry[]
+  /** True while the journal holds the bundled example entries rather than the user's own. */
+  sample?: boolean
 }

@@ -8,7 +8,8 @@ A personal finance tracker built on **double-entry bookkeeping**. Every transact
 - **Journal**: multi-line (split) entries with live debit/credit totals, a one-click "balance" helper and strict validation. The list uses the traditional journal layout, with credits indented under debits.
 - **General ledger**: per-account (or per-group) postings with a running balance, counter-accounts, a date-range opening balance and a T-account summary.
 - **Reports**: trial balance, balance sheet (with unclosed net income) and income statement (with savings rate), all for any date or period.
-- **Data**: stored in the browser's `localStorage`. JSON export/import, sample data, currency selection.
+- **Data**: stored in the browser's `localStorage`. JSON export/import, sample data on first visit, currency selection.
+- **How it works**: a built-in guide with the debit/credit rules and common example entries.
 
 Amounts are stored as integer cents, so there is no floating-point drift.
 
@@ -20,6 +21,7 @@ npm run dev     # http://localhost:5173
 npm test        # ledger logic unit tests (Vitest)
 npm run lint
 npm run build
+npm run build:single   # one self-contained HTML file in dist-single/
 ```
 
 Stack: React 19, TypeScript, Vite, Tailwind CSS v4.

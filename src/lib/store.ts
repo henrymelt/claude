@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react'
-import { emptyLedger } from './defaultChart'
+import { emptyLedger, sampleEntries } from './defaultChart'
 import type { Account, JournalEntry, LedgerData } from './types'
 
 const STORAGE_KEY = 'double-entry-ledger:v1'
@@ -52,7 +52,8 @@ function load(): LedgerData {
   } catch {
     // Storage unavailable or corrupt: start fresh.
   }
-  return emptyLedger()
+  // First visit: open with example entries so every view has something to show.
+  return { ...emptyLedger(), entries: sampleEntries(), sample: true }
 }
 
 export function useLedger() {
