@@ -85,7 +85,7 @@ export function ChartOfAccounts({
                 type="button"
                 onClick={() => setFilter(t)}
                 className={`rounded-md px-2.5 py-1 text-sm font-medium ${
-                  filter === t ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+                  filter === t ? 'bg-slate-900 text-slate-50' : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 {t === 'all' ? 'All' : ACCOUNT_TYPE_LABELS[t]}
@@ -94,7 +94,7 @@ export function ChartOfAccounts({
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-3">
             <input
-              className={`${inputClass} w-48`}
+              className={`${inputClass} !w-48`}
               placeholder="Search code or name…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

@@ -6,6 +6,7 @@ import { Journal } from './components/Journal'
 import { JournalEntryForm } from './components/JournalEntryForm'
 import { Reports } from './components/Reports'
 import { Guide } from './components/Guide'
+import { ThemeSwitch } from './components/ThemeSwitch'
 import { Button, ConfirmDialog, inputClass, Modal } from './components/ui'
 import { emptyLedger, sampleEntries } from './lib/defaultChart'
 import { saveTextFile } from './lib/saveFile'
@@ -75,7 +76,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      <header style={{ top: 'env(safe-area-inset-top, 0px)' }} className="sticky z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <header style={{ top: 'env(safe-area-inset-top, 0px)' }} className="z-10 border-b sm:sticky border-slate-200 bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 items-center justify-center rounded-lg bg-indigo-600 px-1.5 font-mono text-[11px] font-bold text-white">Dr|Cr</div>
@@ -98,7 +99,8 @@ export default function App() {
               </button>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <ThemeSwitch />
             <Button variant="ghost" onClick={() => setDialog({ kind: 'guide' })}>
               How it works
             </Button>
@@ -113,7 +115,7 @@ export default function App() {
                 <>
                   <div className="fixed inset-0" onClick={() => setMenuOpen(false)} />
                   <div
-                    className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg"
+                    className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-slate-200 bg-surface py-1 text-sm shadow-lg"
                     onClick={() => setMenuOpen(false)}
                   >
                     <MenuItem onClick={() => setDialog({ kind: 'sample' })}>Load sample data</MenuItem>
@@ -123,7 +125,7 @@ export default function App() {
                     <label className="flex items-center justify-between px-3 py-1.5 text-slate-700" onClick={(e) => e.stopPropagation()}>
                       Currency
                       <select
-                        className="rounded border border-slate-300 px-1 py-0.5 text-sm"
+                        className="rounded border border-slate-300 bg-surface px-1 py-0.5 text-sm text-slate-900"
                         value={data.currency}
                         onChange={(e) => dispatch({ type: 'setCurrency', currency: e.target.value })}
                       >
@@ -158,7 +160,7 @@ export default function App() {
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
         {data.sample && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <p className="min-w-0 flex-1">
+            <p className="min-w-0 flex-[1_1_20rem]">
               <b>You're viewing sample data.</b> Explore the accounts, journal and reports, then clear the examples to start
               your own books. Your chart of accounts stays.
             </p>

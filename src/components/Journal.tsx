@@ -44,10 +44,10 @@ export function Journal({
   return (
     <Card>
       <div className="flex flex-wrap items-end gap-3 border-b border-slate-200 px-4 py-3">
-        <input className={`${inputClass} w-56`} placeholder="Search description, account, memo…" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <input type="date" className={`${inputClass} w-40`} value={from} onChange={(e) => setFrom(e.target.value)} aria-label="From date" />
+        <input className={`${inputClass} !w-56`} placeholder="Search description, account, memo…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input type="date" className={`${inputClass} !w-40`} value={from} onChange={(e) => setFrom(e.target.value)} aria-label="From date" />
         <span className="pb-1.5 text-sm text-slate-400">to</span>
-        <input type="date" className={`${inputClass} w-40`} value={to} onChange={(e) => setTo(e.target.value)} aria-label="To date" />
+        <input type="date" className={`${inputClass} !w-40`} value={to} onChange={(e) => setTo(e.target.value)} aria-label="To date" />
         <div className="ml-auto">
           <Button variant="primary" onClick={onNew}>
             + New entry

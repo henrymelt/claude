@@ -44,10 +44,10 @@ export function AccountLedger({
           </Field>
         </div>
         <Field label="From">
-          <input type="date" className={`${inputClass} w-40`} value={from} onChange={(e) => setFrom(e.target.value)} />
+          <input type="date" className={`${inputClass} !w-40`} value={from} onChange={(e) => setFrom(e.target.value)} />
         </Field>
         <Field label="To">
-          <input type="date" className={`${inputClass} w-40`} value={to} onChange={(e) => setTo(e.target.value)} />
+          <input type="date" className={`${inputClass} !w-40`} value={to} onChange={(e) => setTo(e.target.value)} />
         </Field>
       </Card>
 

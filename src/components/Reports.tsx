@@ -29,7 +29,7 @@ export function Reports({ data, onOpenLedger }: { data: LedgerData; onOpenLedger
               type="button"
               onClick={() => setReport(r.id)}
               className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                report === r.id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+                report === r.id ? 'bg-slate-900 text-slate-50' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
               {r.label}
@@ -39,11 +39,11 @@ export function Reports({ data, onOpenLedger }: { data: LedgerData; onOpenLedger
         <div className="ml-auto flex gap-3">
           {report === 'income' && (
             <Field label="From">
-              <input type="date" className={`${inputClass} w-40`} value={from} onChange={(e) => setFrom(e.target.value)} />
+              <input type="date" className={`${inputClass} !w-40`} value={from} onChange={(e) => setFrom(e.target.value)} />
             </Field>
           )}
           <Field label={report === 'income' ? 'To' : 'As of'}>
-            <input type="date" className={`${inputClass} w-40`} value={asOf} onChange={(e) => setAsOf(e.target.value)} />
+            <input type="date" className={`${inputClass} !w-40`} value={asOf} onChange={(e) => setAsOf(e.target.value)} />
           </Field>
         </div>
       </Card>
@@ -78,42 +78,44 @@ function TrialBalance({ data, asOf, onOpenLedger }: { data: LedgerData; asOf: st
       {tb.rows.length === 0 ? (
         <EmptyState title="No balances to report" />
       ) : (
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-              <th className="w-24 px-6 py-2">Code</th>
-              <th className="px-4 py-2">Account</th>
-              <th className="w-40 px-4 py-2 text-right">Debit</th>
-              <th className="w-40 px-6 py-2 text-right">Credit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tb.rows.map((r) => (
-              <tr key={r.account.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="px-6 py-1.5 font-mono text-xs text-slate-500">{r.account.code}</td>
-                <td className="px-4 py-1.5">
-                  <button type="button" className="hover:text-indigo-600 hover:underline" onClick={() => onOpenLedger(r.account.id)}>
-                    {r.account.name}
-                  </button>
-                </td>
-                <td className="num px-4 py-1.5">{r.debit ? formatMoney(r.debit, currency) : ''}</td>
-                <td className="num px-6 py-1.5">{r.credit ? formatMoney(r.credit, currency) : ''}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                <th className="w-24 px-6 py-2">Code</th>
+                <th className="px-4 py-2">Account</th>
+                <th className="w-40 px-4 py-2 text-right">Debit</th>
+                <th className="w-40 px-6 py-2 text-right">Credit</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="border-t-2 border-slate-400 font-semibold">
-              <td className="px-6 py-2" colSpan={2}>
-                Totals{' '}
-                <span className={`ml-2 text-xs font-medium ${balanced ? 'text-emerald-600' : 'text-rose-600'}`}>
-                  {balanced ? '✓ Balanced' : `✗ Off by ${formatMoney(Math.abs(tb.totalDebit - tb.totalCredit), currency)}`}
-                </span>
-              </td>
-              <td className="num px-4 py-2 underline decoration-double underline-offset-4">{formatMoney(tb.totalDebit, currency)}</td>
-              <td className="num px-6 py-2 underline decoration-double underline-offset-4">{formatMoney(tb.totalCredit, currency)}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              {tb.rows.map((r) => (
+                <tr key={r.account.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="px-6 py-1.5 font-mono text-xs text-slate-500">{r.account.code}</td>
+                  <td className="px-4 py-1.5">
+                    <button type="button" className="hover:text-indigo-600 hover:underline" onClick={() => onOpenLedger(r.account.id)}>
+                      {r.account.name}
+                    </button>
+                  </td>
+                  <td className="num px-4 py-1.5">{r.debit ? formatMoney(r.debit, currency) : ''}</td>
+                  <td className="num px-6 py-1.5">{r.credit ? formatMoney(r.credit, currency) : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-slate-400 font-semibold">
+                <td className="px-6 py-2" colSpan={2}>
+                  Totals{' '}
+                  <span className={`ml-2 text-xs font-medium ${balanced ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {balanced ? '✓ Balanced' : `✗ Off by ${formatMoney(Math.abs(tb.totalDebit - tb.totalCredit), currency)}`}
+                  </span>
+                </td>
+                <td className="num px-4 py-2 underline decoration-double underline-offset-4">{formatMoney(tb.totalDebit, currency)}</td>
+                <td className="num px-6 py-2 underline decoration-double underline-offset-4">{formatMoney(tb.totalCredit, currency)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       )}
     </Card>
   )

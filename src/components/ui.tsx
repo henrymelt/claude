@@ -6,9 +6,9 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm disabled:bg-indigo-300',
-  secondary: 'bg-white text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 shadow-sm',
+  secondary: 'bg-surface text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 shadow-sm',
   ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-  danger: 'bg-white text-rose-600 ring-1 ring-inset ring-rose-200 hover:bg-rose-50',
+  danger: 'bg-surface text-rose-600 ring-1 ring-inset ring-rose-200 hover:bg-rose-50',
 }
 
 export function Button({
@@ -28,7 +28,7 @@ export function Button({
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-xl border border-slate-200 bg-white shadow-sm ${className}`}>{children}</div>
+  return <div className={`rounded-xl border border-slate-200 bg-surface shadow-sm ${className}`}>{children}</div>
 }
 
 export function Modal({
@@ -52,7 +52,7 @@ export function Modal({
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className={`m-auto w-[calc(100%-2rem)] ${wide ? 'max-w-4xl' : 'max-w-lg'} rounded-xl bg-white p-0 shadow-2xl backdrop:bg-slate-900/40`}
+      className={`m-auto w-[calc(100%-2rem)] ${wide ? 'max-w-4xl' : 'max-w-lg'} rounded-xl bg-surface p-0 text-slate-900 shadow-2xl backdrop:bg-black/50`}
     >
       <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
         <h2 className="text-base font-semibold">{title}</h2>
@@ -76,7 +76,7 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 }
 
 export const inputClass =
-  'block w-full rounded-md border-0 px-2.5 py-1.5 text-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus:outline-none disabled:bg-slate-50 disabled:text-slate-500'
+  'block w-full rounded-md border-0 bg-surface px-2.5 py-1.5 text-sm text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus:outline-none disabled:bg-slate-50 disabled:text-slate-500'
 
 const TYPE_STYLES: Record<AccountType, string> = {
   asset: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',

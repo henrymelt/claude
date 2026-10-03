@@ -3,16 +3,112 @@
 @theme {
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Cards, dialogs, menus and form fields. */
+  --color-surface: #ffffff;
 }
 
-/* A deliberately light, paper-ledger look in every theme. */
+/*
+ * Theming
+ * -------
+ * Components use Tailwind's slate scale for neutrals plus a few accent tints, and
+ * `surface` for raised panels. Dark mode re-points those colour variables, so
+ * every utility (text-slate-900, bg-emerald-50, …) flips without per-component
+ * dark: classes.
+ *
+ * Which palette applies:
+ *   [data-mode="light" | "dark"] on <html>  the user's explicit choice (set by the app)
+ *   otherwise [data-theme="dark"]           the claude.ai viewer's theme
+ *   otherwise prefers-color-scheme          the device setting
+ * `color-scheme` follows, so native controls (date pickers, dropdowns,
+ * scrollbars) always match the page instead of the browser default.
+ */
 :root {
   color-scheme: light;
+  /* Slightly darker than stock slate-400 so secondary text stays legible on white. */
+  --color-slate-400: #7b8597;
+}
+
+/* The dark palette. CSS has no way to share one block between a media query and an
+   attribute selector, so the values appear twice; keep both copies identical. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-mode='light']) {
+    color-scheme: dark;
+    --color-surface: #141b28;
+    --color-slate-50: #0c111b;
+    --color-slate-100: #1b2333;
+    --color-slate-200: #273044;
+    --color-slate-300: #3a4660;
+    --color-slate-400: #8692a7;
+    --color-slate-500: #9aa5b8;
+    --color-slate-600: #b2bccc;
+    --color-slate-700: #cad2de;
+    --color-slate-800: #e0e6ee;
+    --color-slate-900: #f1f4f8;
+    --color-indigo-50: color-mix(in oklab, #6366f1 18%, #141b28);
+    --color-indigo-300: #4c4f9a;
+    --color-indigo-500: #7c7ff5;
+    --color-indigo-600: #6366f1;
+    --color-indigo-700: #a5b4fc;
+    --color-emerald-50: color-mix(in oklab, #10b981 16%, #141b28);
+    --color-emerald-600: #34d399;
+    --color-emerald-700: #6ee7b7;
+    --color-rose-50: color-mix(in oklab, #f43f5e 16%, #141b28);
+    --color-rose-200: color-mix(in oklab, #f43f5e 40%, #141b28);
+    --color-rose-400: #fb7185;
+    --color-rose-600: #f43f5e;
+    --color-rose-700: #fda4af;
+    --color-amber-50: color-mix(in oklab, #f59e0b 14%, #141b28);
+    --color-amber-200: color-mix(in oklab, #f59e0b 38%, #141b28);
+    --color-amber-800: #fcd34d;
+    --color-amber-900: #fde68a;
+    --color-sky-50: color-mix(in oklab, #0ea5e9 16%, #141b28);
+    --color-sky-700: #7dd3fc;
+    --color-violet-50: color-mix(in oklab, #8b5cf6 18%, #141b28);
+    --color-violet-700: #c4b5fd;
+  }
+}
+
+:root[data-theme='dark']:not([data-mode='light']),
+:root[data-mode='dark'] {
+  color-scheme: dark;
+  --color-surface: #141b28;
+  --color-slate-50: #0c111b;
+  --color-slate-100: #1b2333;
+  --color-slate-200: #273044;
+  --color-slate-300: #3a4660;
+  --color-slate-400: #8692a7;
+  --color-slate-500: #9aa5b8;
+  --color-slate-600: #b2bccc;
+  --color-slate-700: #cad2de;
+  --color-slate-800: #e0e6ee;
+  --color-slate-900: #f1f4f8;
+  --color-indigo-50: color-mix(in oklab, #6366f1 18%, #141b28);
+  --color-indigo-300: #4c4f9a;
+  --color-indigo-500: #7c7ff5;
+  --color-indigo-600: #6366f1;
+  --color-indigo-700: #a5b4fc;
+  --color-emerald-50: color-mix(in oklab, #10b981 16%, #141b28);
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-rose-50: color-mix(in oklab, #f43f5e 16%, #141b28);
+  --color-rose-200: color-mix(in oklab, #f43f5e 40%, #141b28);
+  --color-rose-400: #fb7185;
+  --color-rose-600: #f43f5e;
+  --color-rose-700: #fda4af;
+  --color-amber-50: color-mix(in oklab, #f59e0b 14%, #141b28);
+  --color-amber-200: color-mix(in oklab, #f59e0b 38%, #141b28);
+  --color-amber-800: #fcd34d;
+  --color-amber-900: #fde68a;
+  --color-sky-50: color-mix(in oklab, #0ea5e9 16%, #141b28);
+  --color-sky-700: #7dd3fc;
+  --color-violet-50: color-mix(in oklab, #8b5cf6 18%, #141b28);
+  --color-violet-700: #c4b5fd;
 }
 
 body {
   background: var(--color-slate-50);
-  @apply bg-slate-50 text-slate-900 antialiased;
+  color: var(--color-slate-900);
+  @apply antialiased;
 }
 
 .num {
