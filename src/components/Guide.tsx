@@ -1,20 +1,20 @@
 import { Modal } from './ui'
 
 const RULES: [type: string, normal: string, increase: string, decrease: string][] = [
-  ['Assets (1xxx)', 'Debit', 'Debit', 'Credit'],
-  ['Liabilities (2xxx)', 'Credit', 'Credit', 'Debit'],
-  ['Equity (3xxx)', 'Credit', 'Credit', 'Debit'],
-  ['Income (4xxx)', 'Credit', 'Credit', 'Debit'],
-  ['Expenses (5xxx)', 'Debit', 'Debit', 'Credit'],
+  ['Assets (1xxxx)', 'Debit', 'Debit', 'Credit'],
+  ['Liabilities (2xxxx)', 'Credit', 'Credit', 'Debit'],
+  ['Equity (3xxxx)', 'Credit', 'Credit', 'Debit'],
+  ['Income (4xxxx)', 'Credit', 'Credit', 'Debit'],
+  ['Expenses (5xxxx)', 'Debit', 'Debit', 'Credit'],
 ]
 
 const EXAMPLES: [what: string, debit: string, credit: string][] = [
-  ['Salary paid into your current account', '1110 Current Account', '4100 Salary & Wages'],
-  ['Groceries on the credit card', '5210 Groceries', '2110 Credit Card'],
-  ['Rent paid from your current account', '5110 Rent', '1110 Current Account'],
-  ['Pay off the credit card', '2110 Credit Card', '1110 Current Account'],
-  ['Move money to savings', '1120 Savings Account', '1110 Current Account'],
-  ['Loan repayment (capital + interest)', '2220 Car Loan + 5800 Interest', '1110 Current Account'],
+  ['Salary paid into your current account', '11100 Current Account', '41000 Salary & Wages'],
+  ['Groceries on the credit card', '52100 Groceries', '21100 Credit Card'],
+  ['Rent paid from your current account', '51100 Rent', '11100 Current Account'],
+  ['Pay off the credit card', '21100 Credit Card', '11100 Current Account'],
+  ['Move money to savings', '11200 Savings Account', '11100 Current Account'],
+  ['Loan repayment (capital + interest)', '22200 Car Loan + 58000 Interest', '11100 Current Account'],
 ]
 
 const STEPS: [title: string, body: string][] = [
@@ -24,7 +24,7 @@ const STEPS: [title: string, body: string][] = [
   ],
   [
     'Record your starting position',
-    'Post one “Opening balances” entry: debit each asset with what it holds today, credit each debt with what you owe, and put the difference on 3100 Opening Balances (usually a credit). That difference is your starting net worth.',
+    'Post one “Opening balances” entry: debit each asset with what it holds today, credit each debt with what you owe, and put the difference on 31000 Opening Balances (usually a credit). That difference is your starting net worth.',
   ],
   [
     'Record each transaction as a journal entry',

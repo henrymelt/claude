@@ -51,6 +51,8 @@ export interface LedgerData {
   currency: string
   accounts: Account[]
   entries: JournalEntry[]
+  /** Digits per GL code; ledgers saved before the switch to 5-digit codes lack it. */
+  codeLength?: number
   /** True while the journal holds the bundled example entries rather than the user's own. */
   sample?: boolean
 }

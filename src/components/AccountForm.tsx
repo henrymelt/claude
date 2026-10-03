@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { isValidCode } from '../lib/defaultChart'
 import { accountHasPostings, descendantIds } from '../lib/ledger'
 import { newId } from '../lib/store'
 import { NORMAL_BALANCE } from '../lib/types'
@@ -44,6 +45,7 @@ export function AccountForm({
     const errs: string[] = []
     if (!isRoot && !parent) errs.push('Choose a parent group.')
     if (!code.trim()) errs.push('Enter an account code.')
+    else if (!isValidCode(code.trim())) errs.push('Account codes must be exactly 5 digits, e.g. 52300.')
     else if (accounts.some((a) => a.code === code.trim() && a.id !== account?.id)) errs.push(`Code ${code} is already used.`)
     if (!name.trim()) errs.push('Enter an account name.')
     if (account && parent && parent.type !== account.type && (hasPostings || hasChildren))
@@ -80,7 +82,13 @@ export function AccountForm({
         )}
         <div className="grid grid-cols-3 gap-3">
           <Field label="Code">
-            <input className={`${inputClass} font-mono`} value={code} onChange={(e) => setCode(e.target.value)} />
+            <input
+              className={`${inputClass} font-mono`}
+              value={code}
+              inputMode="numeric"
+              placeholder="5 digits"
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+            />
           </Field>
           <div className="col-span-2">
             <Field label="Name">
@@ -134,7 +142,7 @@ export function AccountForm({
   )
 }
 
-/** Next free code under a parent: 5200 → 5230 if 5210/5220 exist; 5210 → 5211. */
+/** Next free 5-digit code under a parent: 52000 → 52300 if 52100/52200 exist; 52100 → 52110; 52110 → 52111. */
 function suggestCode(parentId: string | undefined, accounts: Account[]): string {
   const parent = accounts.find((a) => a.id === parentId)
   if (!parent) return ''
@@ -146,5 +154,6 @@ function suggestCode(parentId: string | undefined, accounts: Account[]): string 
   const used = new Set(accounts.map((a) => a.code))
   let next = siblings.length ? Math.max(...siblings) + step : base + step
   while (used.has(String(next))) next += 1
-  return String(next)
+  // Past the end of the code range (e.g. after 59900): leave the code for the user to choose.
+  return isValidCode(String(next)) ? String(next) : ''
 }

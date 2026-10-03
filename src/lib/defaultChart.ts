@@ -3,71 +3,71 @@ import type { Account, AccountType, JournalEntry, LedgerData } from './types'
 type Seed = [code: string, name: string, children?: Seed[], description?: string]
 
 const TREE: Record<AccountType, Seed> = {
-  asset: ['1000', 'Assets', [
-    ['1100', 'Cash & Bank', [
-      ['1110', 'Current Account'],
-      ['1120', 'Savings Account'],
-      ['1130', 'Cash on Hand'],
+  asset: ['10000', 'Assets', [
+    ['11000', 'Cash & Bank', [
+      ['11100', 'Current Account'],
+      ['11200', 'Savings Account'],
+      ['11300', 'Cash on Hand'],
     ]],
-    ['1200', 'Investments', [
-      ['1210', 'Investment Account'],
-      ['1220', 'Pension'],
+    ['12000', 'Investments', [
+      ['12100', 'Investment Account'],
+      ['12200', 'Pension'],
     ]],
-    ['1300', 'Property', [
-      ['1310', 'Home'],
-      ['1320', 'Vehicle'],
+    ['13000', 'Property', [
+      ['13100', 'Home'],
+      ['13200', 'Vehicle'],
     ]],
-    ['1400', 'Receivables', [['1410', 'Money Owed to Me']]],
+    ['14000', 'Receivables', [['14100', 'Money Owed to Me']]],
   ]],
-  liability: ['2000', 'Liabilities', [
-    ['2100', 'Credit Cards', [['2110', 'Credit Card']]],
-    ['2200', 'Loans', [
-      ['2210', 'Mortgage'],
-      ['2220', 'Car Loan'],
-      ['2230', 'Student Loan'],
+  liability: ['20000', 'Liabilities', [
+    ['21000', 'Credit Cards', [['21100', 'Credit Card']]],
+    ['22000', 'Loans', [
+      ['22100', 'Mortgage'],
+      ['22200', 'Car Loan'],
+      ['22300', 'Student Loan'],
     ]],
-    ['2300', 'Other Payables', [['2310', 'Money I Owe']]],
+    ['23000', 'Other Payables', [['23100', 'Money I Owe']]],
   ]],
-  equity: ['3000', 'Equity', [
-    ['3100', 'Opening Balances', undefined, 'Offset for starting balances when you begin tracking.'],
-    ['3200', 'Retained Earnings', undefined, 'Accumulated net income from closed periods.'],
+  equity: ['30000', 'Equity', [
+    ['31000', 'Opening Balances', undefined, 'Offset for starting balances when you begin tracking.'],
+    ['32000', 'Retained Earnings', undefined, 'Accumulated net income from closed periods.'],
   ]],
-  income: ['4000', 'Income', [
-    ['4100', 'Salary & Wages'],
-    ['4200', 'Interest Income'],
-    ['4300', 'Dividends'],
-    ['4400', 'Gifts Received'],
-    ['4900', 'Other Income'],
+  income: ['40000', 'Income', [
+    ['41000', 'Salary & Wages'],
+    ['42000', 'Interest Income'],
+    ['43000', 'Dividends'],
+    ['44000', 'Gifts Received'],
+    ['49000', 'Other Income'],
   ]],
-  expense: ['5000', 'Expenses', [
-    ['5100', 'Housing', [
-      ['5110', 'Rent'],
-      ['5120', 'Mortgage Interest'],
-      ['5130', 'Utilities'],
-      ['5140', 'Home Maintenance'],
+  expense: ['50000', 'Expenses', [
+    ['51000', 'Housing', [
+      ['51100', 'Rent'],
+      ['51200', 'Mortgage Interest'],
+      ['51300', 'Utilities'],
+      ['51400', 'Home Maintenance'],
     ]],
-    ['5200', 'Food', [
-      ['5210', 'Groceries'],
-      ['5220', 'Eating Out'],
+    ['52000', 'Food', [
+      ['52100', 'Groceries'],
+      ['52200', 'Eating Out'],
     ]],
-    ['5300', 'Transport', [
-      ['5310', 'Fuel'],
-      ['5320', 'Public Transport'],
-      ['5330', 'Vehicle Maintenance'],
+    ['53000', 'Transport', [
+      ['53100', 'Fuel'],
+      ['53200', 'Public Transport'],
+      ['53300', 'Vehicle Maintenance'],
     ]],
-    ['5400', 'Health', [
-      ['5410', 'Medical'],
-      ['5420', 'Fitness'],
+    ['54000', 'Health', [
+      ['54100', 'Medical'],
+      ['54200', 'Fitness'],
     ]],
-    ['5500', 'Personal', [
-      ['5510', 'Clothing'],
-      ['5520', 'Entertainment'],
-      ['5530', 'Subscriptions'],
+    ['55000', 'Personal', [
+      ['55100', 'Clothing'],
+      ['55200', 'Entertainment'],
+      ['55300', 'Subscriptions'],
     ]],
-    ['5600', 'Insurance'],
-    ['5700', 'Tax'],
-    ['5800', 'Interest & Bank Charges'],
-    ['5900', 'Miscellaneous'],
+    ['56000', 'Insurance'],
+    ['57000', 'Tax'],
+    ['58000', 'Interest & Bank Charges'],
+    ['59000', 'Miscellaneous'],
   ]],
 }
 
@@ -87,7 +87,16 @@ export const LEGACY_DEFAULT_NAMES: Record<string, string> = {
   '5800': 'Interest & Bank Fees',
 }
 
-export const accountIdForCode = (code: string) => `acc-${code}`
+/**
+ * Stable internal id for a default account, from its 5-digit code (11100 → acc-1110).
+ * Ids were fixed when the chart used 4-digit codes and never change, so journal entries in
+ * saved ledgers keep pointing at the same accounts. The visible code is free to change.
+ */
+export const accountIdForCode = (code: string) => `acc-${code.slice(0, 4)}`
+
+/** GL codes are exactly five digits. */
+export const CODE_LENGTH = 5
+export const isValidCode = (code: string) => /^\d{5}$/.test(code)
 
 export function defaultAccounts(): Account[] {
   const out: Account[] = []
@@ -101,7 +110,7 @@ export function defaultAccounts(): Account[] {
 }
 
 export function emptyLedger(): LedgerData {
-  return { version: 1, currency: 'CAD', accounts: defaultAccounts(), entries: [] }
+  return { version: 1, currency: 'CAD', codeLength: CODE_LENGTH, accounts: defaultAccounts(), entries: [] }
 }
 
 /** A few months of realistic activity so the reports have something to show. */
@@ -119,57 +128,57 @@ export function sampleEntries(): JournalEntry[] {
   const year = new Date().getFullYear()
   const entries: JournalEntry[] = [
     entry(`${year}-01-01`, 'Opening balances', [
-      ['1110', d(3200), 0],
-      ['1120', d(12000), 0],
-      ['1210', d(18500), 0],
-      ['1320', d(14000), 0],
-      ['2110', 0, d(850)],
-      ['2220', 0, d(9600)],
-      ['3100', 0, d(37250)],
+      ['11100', d(3200), 0],
+      ['11200', d(12000), 0],
+      ['12100', d(18500), 0],
+      ['13200', d(14000), 0],
+      ['21100', 0, d(850)],
+      ['22200', 0, d(9600)],
+      ['31000', 0, d(37250)],
     ]),
   ]
 
   for (const [m, mm] of [[1, '01'], [2, '02'], [3, '03']] as const) {
     const eom = mm === '02' ? '28' : '30'
     entries.push(
-      entry(`${year}-${mm}-01`, 'Rent', [['5110', d(1650), 0], ['1110', 0, d(1650)]]),
-      entry(`${year}-${mm}-05`, 'Weekly food shop', [['5210', d(142.37), 0], ['2110', 0, d(142.37)]]),
+      entry(`${year}-${mm}-01`, 'Rent', [['51100', d(1650), 0], ['11100', 0, d(1650)]]),
+      entry(`${year}-${mm}-05`, 'Weekly food shop', [['52100', d(142.37), 0], ['21100', 0, d(142.37)]]),
       entry(`${year}-${mm}-12`, 'Electricity & broadband', [
-        ['5130', d(85.2), 0, 'Electricity'],
-        ['5130', d(60), 0, 'Broadband'],
-        ['1110', 0, d(145.2)],
+        ['51300', d(85.2), 0, 'Electricity'],
+        ['51300', d(60), 0, 'Broadband'],
+        ['11100', 0, d(145.2)],
       ]),
       entry(`${year}-${mm}-15`, 'Salary', [
-        ['1110', d(2980), 0, 'Net pay'],
-        ['5700', d(720), 0, 'Income tax'],
-        ['5600', d(95), 0, 'Health insurance'],
-        ['1220', d(305), 0, 'Pension contribution'],
-        ['4100', 0, d(4100), 'Gross pay'],
+        ['11100', d(2980), 0, 'Net pay'],
+        ['57000', d(720), 0, 'Income tax'],
+        ['56000', d(95), 0, 'Health insurance'],
+        ['12200', d(305), 0, 'Pension contribution'],
+        ['41000', 0, d(4100), 'Gross pay'],
       ]),
-      entry(`${year}-${mm}-18`, 'Dinner with friends', [['5220', d(64.5 + m * 3), 0], ['2110', 0, d(64.5 + m * 3)]]),
+      entry(`${year}-${mm}-18`, 'Dinner with friends', [['52200', d(64.5 + m * 3), 0], ['21100', 0, d(64.5 + m * 3)]]),
       entry(`${year}-${mm}-20`, 'Car loan repayment', [
-        ['2220', d(310), 0, 'Capital'],
-        ['5800', d(42), 0, 'Interest'],
-        ['1110', 0, d(352)],
+        ['22200', d(310), 0, 'Capital'],
+        ['58000', d(42), 0, 'Interest'],
+        ['11100', 0, d(352)],
       ]),
-      entry(`${year}-${mm}-22`, 'Fuel', [['5310', d(48 + m * 2), 0], ['2110', 0, d(48 + m * 2)]]),
-      entry(`${year}-${mm}-26`, 'Credit card repayment', [['2110', d(400), 0], ['1110', 0, d(400)]]),
-      entry(`${year}-${mm}-28`, 'Transfer to savings', [['1120', d(500), 0], ['1110', 0, d(500)]]),
+      entry(`${year}-${mm}-22`, 'Fuel', [['53100', d(48 + m * 2), 0], ['21100', 0, d(48 + m * 2)]]),
+      entry(`${year}-${mm}-26`, 'Credit card repayment', [['21100', d(400), 0], ['11100', 0, d(400)]]),
+      entry(`${year}-${mm}-28`, 'Transfer to savings', [['11200', d(500), 0], ['11100', 0, d(500)]]),
       entry(`${year}-${mm}-${eom}`, 'Salary', [
-        ['1110', d(2980), 0, 'Net pay'],
-        ['5700', d(720), 0, 'Income tax'],
-        ['5600', d(95), 0, 'Health insurance'],
-        ['1220', d(305), 0, 'Pension contribution'],
-        ['4100', 0, d(4100), 'Gross pay'],
+        ['11100', d(2980), 0, 'Net pay'],
+        ['57000', d(720), 0, 'Income tax'],
+        ['56000', d(95), 0, 'Health insurance'],
+        ['12200', d(305), 0, 'Pension contribution'],
+        ['41000', 0, d(4100), 'Gross pay'],
       ]),
-      entry(`${year}-${mm}-${eom}`, 'Savings interest', [['1120', d(18 + m), 0], ['4200', 0, d(18 + m)]]),
+      entry(`${year}-${mm}-${eom}`, 'Savings interest', [['11200', d(18 + m), 0], ['42000', 0, d(18 + m)]]),
     )
   }
   entries.push(
-    entry(`${year}-02-14`, 'Streaming subscriptions', [['5530', d(27.98), 0], ['2110', 0, d(27.98)]]),
-    entry(`${year}-03-08`, 'Car service', [['5330', d(79.99), 0], ['1130', 0, d(40)], ['2110', 0, d(39.99)]]),
-    entry(`${year}-03-02`, 'Cash machine withdrawal', [['1130', d(100), 0], ['1110', 0, d(100)]]),
-    entry(`${year}-03-25`, 'Quarterly dividend', [['1210', d(132.4), 0], ['4300', 0, d(132.4)]]),
+    entry(`${year}-02-14`, 'Streaming subscriptions', [['55300', d(27.98), 0], ['21100', 0, d(27.98)]]),
+    entry(`${year}-03-08`, 'Car service', [['53300', d(79.99), 0], ['11300', 0, d(40)], ['21100', 0, d(39.99)]]),
+    entry(`${year}-03-02`, 'Cash machine withdrawal', [['11300', d(100), 0], ['11100', 0, d(100)]]),
+    entry(`${year}-03-25`, 'Quarterly dividend', [['12100', d(132.4), 0], ['43000', 0, d(132.4)]]),
   )
   return entries
 }

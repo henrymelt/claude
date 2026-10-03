@@ -10,7 +10,7 @@ import { ThemeSwitch } from './components/ThemeSwitch'
 import { Button, ConfirmDialog, inputClass, Modal } from './components/ui'
 import { emptyLedger, sampleEntries } from './lib/defaultChart'
 import { saveTextFile } from './lib/saveFile'
-import { isLedgerData, today, useLedger } from './lib/store'
+import { isLedgerData, migrate, today, useLedger } from './lib/store'
 import type { JournalEntry, LedgerData } from './lib/types'
 
 type Tab = 'accounts' | 'journal' | 'ledger' | 'reports'
@@ -66,7 +66,7 @@ export default function App() {
     try {
       const parsed: unknown = JSON.parse(await file.text())
       if (!isLedgerData(parsed)) throw new Error('not a ledger file')
-      setDialog({ kind: 'import', data: parsed, fileName: file.name })
+      setDialog({ kind: 'import', data: migrate(parsed), fileName: file.name })
     } catch {
       setDialog({ kind: 'importError', fileName: file.name })
     }

@@ -4,7 +4,7 @@ A personal finance tracker built on **double-entry bookkeeping**. Every transact
 
 ## Features
 
-- **Chart of accounts**: a hierarchical tree of Assets (1xxx), Liabilities (2xxx), Equity (3xxx), Income (4xxx) and Expenses (5xxx) with rolled-up balances, normal-balance indicators, search, type filters, sub-accounts, archiving and deletion of unused accounts.
+- **Chart of accounts**: a hierarchical tree of 5-digit GL codes: Assets (1xxxx), Liabilities (2xxxx), Equity (3xxxx), Income (4xxxx) and Expenses (5xxxx) with rolled-up balances, normal-balance indicators, search, type filters, sub-accounts, archiving and deletion of unused accounts.
 - **Journal**: multi-line (split) entries with live debit/credit totals, a one-click "balance" helper and strict validation. The list uses the traditional journal layout, with credits indented under debits.
 - **General ledger**: per-account (or per-group) postings with a running balance, counter-accounts, a date-range opening balance and a T-account summary.
 - **Reports**: trial balance, balance sheet (with unclosed net income) and income & expenditure (with surplus and savings rate), all for any date or period.

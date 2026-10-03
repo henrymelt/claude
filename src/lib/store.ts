@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react'
-import { accountIdForCode, defaultAccounts, emptyLedger, LEGACY_DEFAULT_NAMES, sampleEntries } from './defaultChart'
+import { accountIdForCode, CODE_LENGTH, defaultAccounts, emptyLedger, LEGACY_DEFAULT_NAMES, sampleEntries } from './defaultChart'
 import type { Account, JournalEntry, LedgerData } from './types'
 
 const STORAGE_KEY = 'double-entry-ledger:v1'
@@ -45,14 +45,25 @@ export function isLedgerData(x: unknown): x is LedgerData {
 /** Bring a saved ledger up to date with the current default names and sample data. */
 export function migrate(data: LedgerData): LedgerData {
   const current = new Map(defaultAccounts().map((a) => [a.id, a.name]))
-  const accounts = data.accounts.map((a) => {
+  let accounts = data.accounts
+  if (data.codeLength !== CODE_LENGTH) {
+    // 4-digit codes become 5-digit by appending a zero (5230 → 52300), which keeps every
+    // account in the same order and under the same parent. Skip any that would collide.
+    const used = new Set(accounts.map((a) => a.code))
+    accounts = accounts.map((a) => {
+      if (!/^\d{4}$/.test(a.code) || used.has(`${a.code}0`)) return a
+      used.add(`${a.code}0`)
+      return { ...a, code: `${a.code}0` }
+    })
+  }
+  accounts = accounts.map((a) => {
     const legacy = Object.entries(LEGACY_DEFAULT_NAMES).find(([code]) => accountIdForCode(code) === a.id)?.[1]
     const name = current.get(a.id)
     return legacy && name && a.name === legacy ? { ...a, name } : a
   })
   // Example entries are ours, not the user's, so refresh them to the current wording.
   const entries = data.sample ? sampleEntries() : data.entries
-  return { ...data, accounts, entries }
+  return { ...data, codeLength: CODE_LENGTH, accounts, entries }
 }
 
 function load(): LedgerData {

@@ -62,7 +62,7 @@ export function Journal({
               Record your first transaction, or load sample data from the <b>Data</b> menu.
               <br />
               Tip: start with an <i>Opening balances</i> entry that debits your asset accounts, credits your liabilities, and
-              puts the difference in <b>3100 · Opening Balances</b>.
+              puts the difference in <b>31000 · Opening Balances</b>.
             </>
           )}
         </EmptyState>
