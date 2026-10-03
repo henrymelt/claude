@@ -85,7 +85,7 @@ export function defaultAccounts(): Account[] {
 }
 
 export function emptyLedger(): LedgerData {
-  return { version: 1, currency: 'USD', accounts: defaultAccounts(), entries: [] }
+  return { version: 1, currency: 'CAD', accounts: defaultAccounts(), entries: [] }
 }
 
 /** A few months of realistic activity so the reports have something to show. */

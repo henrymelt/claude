@@ -15,17 +15,17 @@ export function centsToInput(cents: number): string {
 
 const formatters = new Map<string, Intl.NumberFormat>()
 
-export function formatMoney(cents: number, currency = 'USD'): string {
+export function formatMoney(cents: number, currency = 'CAD'): string {
   let f = formatters.get(currency)
   if (!f) {
-    f = new Intl.NumberFormat(undefined, { style: 'currency', currency })
+    f = new Intl.NumberFormat(undefined, { style: 'currency', currency, currencyDisplay: 'narrowSymbol' })
     formatters.set(currency, f)
   }
   return f.format(cents / 100)
 }
 
 /** Accounting style: negatives in parentheses, zero as an en dash. */
-export function formatAccounting(cents: number, currency = 'USD'): string {
+export function formatAccounting(cents: number, currency = 'CAD'): string {
   if (cents === 0) return '–'
   const s = formatMoney(Math.abs(cents), currency)
   return cents < 0 ? `(${s})` : s

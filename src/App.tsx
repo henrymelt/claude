@@ -29,7 +29,7 @@ type Dialog =
   | { kind: 'export' }
   | { kind: 'guide' }
 
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'INR', 'NZD', 'SGD']
+const CURRENCIES = ['CAD', 'USD', 'EUR', 'GBP', 'AUD', 'JPY', 'CHF', 'INR', 'NZD', 'SGD']
 
 export default function App() {
   const [data, dispatch] = useLedger()

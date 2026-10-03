@@ -97,3 +97,12 @@ describe('reports', () => {
     expect(balanceSheetSummary(accounts, sample).balanced).toBe(true)
   })
 })
+
+describe('defaults', () => {
+  it('new ledgers use Canadian dollars, shown with a plain $ sign', async () => {
+    const { emptyLedger } = await import('./defaultChart')
+    const { formatMoney } = await import('./money')
+    expect(emptyLedger().currency).toBe('CAD')
+    expect(formatMoney(123456)).toMatch(/^\$1,234\.56$/)
+  })
+})
