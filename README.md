@@ -8,11 +8,24 @@ A personal finance tracker built on **double-entry bookkeeping**. Every transact
 - **Journal**: multi-line (split) entries with live debit/credit totals, a one-click "balance" helper and strict validation. The list uses the traditional journal layout, with credits indented under debits.
 - **General ledger**: per-account (or per-group) postings with a running balance, counter-accounts, a date-range opening balance and a T-account summary.
 - **Reports**: trial balance, balance sheet (with unclosed net income) and income & expenditure (with surplus and savings rate), all for any date or period.
-- **Data**: stored in the browser's `localStorage`. JSON export/import, sample data on first visit, currency selection.
+- **Local-first**: an installable web app that runs offline. Your ledger is stored only in the browser on your device (`localStorage`, with persistent storage requested); nothing is sent to any server, and fonts are bundled so the app makes no outside requests. JSON export/import for backups and moving between devices.
 - **British English** throughout: account names (current account, pension, car loan), sample entries and date formats.
 - **How it works**: a built-in guide with the debit/credit rules and common example entries.
 
 Amounts are stored as integer cents, so there is no floating-point drift.
+
+## Install
+
+The app is published to GitHub Pages by `.github/workflows/pages.yml` on every push to `master`:
+**https://henrymelt.github.io/claude/**
+
+- **Mac (Safari, macOS Sonoma or later):** open the link, then **File → Add to Dock**.
+- **Mac or Windows (Chrome / Edge):** open the link, then click the install icon in the address bar.
+- **iPhone / iPad (Safari):** Share → **Add to Home Screen**.
+
+After the first visit it works with no internet connection. Each browser or installed app keeps its own ledger; use **Data → Export backup / Import backup** to move it.
+
+One-time setup for the repository owner: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ## Development
 

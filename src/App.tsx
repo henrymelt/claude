@@ -9,6 +9,7 @@ import { Guide } from './components/Guide'
 import { ThemeSwitch } from './components/ThemeSwitch'
 import { Button, ConfirmDialog, inputClass, Modal } from './components/ui'
 import { emptyLedger, sampleEntries } from './lib/defaultChart'
+import { useStoragePersistence } from './lib/persist'
 import { saveTextFile } from './lib/saveFile'
 import { isLedgerData, migrate, today, useLedger } from './lib/store'
 import type { JournalEntry, LedgerData } from './lib/types'
@@ -34,6 +35,7 @@ const CURRENCIES = ['CAD', 'USD', 'EUR', 'GBP', 'AUD', 'JPY', 'CHF', 'INR', 'NZD
 
 export default function App() {
   const [data, dispatch] = useLedger()
+  const storage = useStoragePersistence(!data.sample && data.entries.length > 0)
   const [tab, setTab] = useState<Tab>('accounts')
   const [ledgerAccountId, setLedgerAccountId] = useState('')
   const [editing, setEditing] = useState<JournalEntry | 'new' | null>(null)
@@ -184,8 +186,16 @@ export default function App() {
         {tab === 'reports' && <Reports data={data} onOpenLedger={openLedger} />}
       </main>
 
-      <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-slate-400">
-        Your ledger is saved only in this browser. Use Data → Export backup to keep a copy.
+      <footer className="mx-auto flex max-w-6xl flex-wrap gap-x-3 gap-y-1 px-4 pb-8 text-xs text-slate-400">
+        <span>🔒 Your ledger is stored only on this device. Nothing is sent anywhere.</span>
+        <span>
+          {storage === 'persistent'
+            ? 'Storage is permanent: the browser won’t clear it to save space.'
+            : storage === 'best-effort'
+              ? 'The browser may clear storage if space runs low, so export backups regularly.'
+              : ''}{' '}
+          Use Data → Export backup to keep a copy.
+        </span>
       </footer>
 
       {dialog?.kind === 'guide' && <Guide onClose={() => setDialog(null)} />}
