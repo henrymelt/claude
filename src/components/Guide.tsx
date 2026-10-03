@@ -9,12 +9,12 @@ const RULES: [type: string, normal: string, increase: string, decrease: string][
 ]
 
 const EXAMPLES: [what: string, debit: string, credit: string][] = [
-  ['Paycheck lands in checking', '1110 Checking', '4100 Salary & Wages'],
+  ['Salary paid into your current account', '1110 Current Account', '4100 Salary & Wages'],
   ['Groceries on the credit card', '5210 Groceries', '2110 Credit Card'],
-  ['Rent paid from checking', '5110 Rent', '1110 Checking'],
-  ['Pay off the credit card', '2110 Credit Card', '1110 Checking'],
-  ['Move money to savings', '1120 Savings', '1110 Checking'],
-  ['Loan payment (principal + interest)', '2220 Auto Loan + 5800 Interest', '1110 Checking'],
+  ['Rent paid from your current account', '5110 Rent', '1110 Current Account'],
+  ['Pay off the credit card', '2110 Credit Card', '1110 Current Account'],
+  ['Move money to savings', '1120 Savings Account', '1110 Current Account'],
+  ['Loan repayment (capital + interest)', '2220 Car Loan + 5800 Interest', '1110 Current Account'],
 ]
 
 const STEPS: [title: string, body: string][] = [
@@ -28,7 +28,7 @@ const STEPS: [title: string, body: string][] = [
   ],
   [
     'Record each transaction as a journal entry',
-    'Click “+ Journal entry”. Every entry needs at least two lines, and total debits must equal total credits. Use more lines to split a payment, such as a paycheck with taxes withheld. If the totals are off, the form offers to add the balancing amount for you.',
+    'Click “+ Journal entry”. Every entry needs at least two lines, and total debits must equal total credits. Use more lines to split a payment, such as a salary payment with tax deducted. If the totals are off, the form offers to add the balancing amount for you.',
   ],
   [
     'Check an account',
@@ -36,7 +36,7 @@ const STEPS: [title: string, body: string][] = [
   ],
   [
     'Read the reports',
-    'The trial balance shows that debits equal credits. The balance sheet shows what you own, what you owe and your net worth. The income statement shows income against expenses for a period, plus your savings rate.',
+    'The trial balance shows that debits equal credits. The balance sheet shows what you own, what you owe and your net worth. The income & expenditure report sets income against spending for a period and shows your surplus and savings rate.',
   ],
 ]
 

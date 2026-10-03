@@ -115,7 +115,7 @@ export function JournalEntryForm({
               className={inputClass}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Weekly groceries"
+              placeholder="e.g. Weekly food shop"
               autoFocus
             />
           </Field>

@@ -106,3 +106,23 @@ describe('defaults', () => {
     expect(formatMoney(123456)).toMatch(/^\$1,234\.56$/)
   })
 })
+
+describe('British English', () => {
+  it('uses British account names', () => {
+    const names = defaultAccounts().map((a) => a.name)
+    expect(names).toContain('Current Account')
+    expect(names).not.toContain('Checking Account')
+  })
+
+  it('renames untouched legacy default accounts in saved ledgers, but keeps user renames', async () => {
+    const { migrate } = await import('./store')
+    const { emptyLedger } = await import('./defaultChart')
+    const saved = emptyLedger()
+    saved.accounts = saved.accounts.map((a) =>
+      a.code === '1110' ? { ...a, name: 'Checking Account' } : a.code === '2220' ? { ...a, name: 'My Van Loan' } : a,
+    )
+    const out = migrate(saved)
+    expect(out.accounts.find((a) => a.code === '1110')?.name).toBe('Current Account')
+    expect(out.accounts.find((a) => a.code === '2220')?.name).toBe('My Van Loan')
+  })
+})

@@ -5,13 +5,13 @@ type Seed = [code: string, name: string, children?: Seed[], description?: string
 const TREE: Record<AccountType, Seed> = {
   asset: ['1000', 'Assets', [
     ['1100', 'Cash & Bank', [
-      ['1110', 'Checking Account'],
+      ['1110', 'Current Account'],
       ['1120', 'Savings Account'],
       ['1130', 'Cash on Hand'],
     ]],
     ['1200', 'Investments', [
-      ['1210', 'Brokerage Account'],
-      ['1220', 'Retirement Account'],
+      ['1210', 'Investment Account'],
+      ['1220', 'Pension'],
     ]],
     ['1300', 'Property', [
       ['1310', 'Home'],
@@ -23,7 +23,7 @@ const TREE: Record<AccountType, Seed> = {
     ['2100', 'Credit Cards', [['2110', 'Credit Card']]],
     ['2200', 'Loans', [
       ['2210', 'Mortgage'],
-      ['2220', 'Auto Loan'],
+      ['2220', 'Car Loan'],
       ['2230', 'Student Loan'],
     ]],
     ['2300', 'Other Payables', [['2310', 'Money I Owe']]],
@@ -48,11 +48,11 @@ const TREE: Record<AccountType, Seed> = {
     ]],
     ['5200', 'Food', [
       ['5210', 'Groceries'],
-      ['5220', 'Dining Out'],
+      ['5220', 'Eating Out'],
     ]],
-    ['5300', 'Transportation', [
+    ['5300', 'Transport', [
       ['5310', 'Fuel'],
-      ['5320', 'Public Transit'],
+      ['5320', 'Public Transport'],
       ['5330', 'Vehicle Maintenance'],
     ]],
     ['5400', 'Health', [
@@ -65,10 +65,26 @@ const TREE: Record<AccountType, Seed> = {
       ['5530', 'Subscriptions'],
     ]],
     ['5600', 'Insurance'],
-    ['5700', 'Taxes'],
-    ['5800', 'Interest & Bank Fees'],
+    ['5700', 'Tax'],
+    ['5800', 'Interest & Bank Charges'],
     ['5900', 'Miscellaneous'],
   ]],
+}
+
+/**
+ * Names the default chart used before it switched to British English, keyed by code.
+ * Saved ledgers still carrying one of these (i.e. never renamed by the user) are updated on load.
+ */
+export const LEGACY_DEFAULT_NAMES: Record<string, string> = {
+  '1110': 'Checking Account',
+  '1210': 'Brokerage Account',
+  '1220': 'Retirement Account',
+  '2220': 'Auto Loan',
+  '5220': 'Dining Out',
+  '5300': 'Transportation',
+  '5320': 'Public Transit',
+  '5700': 'Taxes',
+  '5800': 'Interest & Bank Fees',
 }
 
 export const accountIdForCode = (code: string) => `acc-${code}`
@@ -117,33 +133,33 @@ export function sampleEntries(): JournalEntry[] {
     const eom = mm === '02' ? '28' : '30'
     entries.push(
       entry(`${year}-${mm}-01`, 'Rent', [['5110', d(1650), 0], ['1110', 0, d(1650)]]),
-      entry(`${year}-${mm}-05`, 'Grocery run', [['5210', d(142.37), 0], ['2110', 0, d(142.37)]]),
-      entry(`${year}-${mm}-12`, 'Electric & internet', [
-        ['5130', d(85.2), 0, 'Electric'],
-        ['5130', d(60), 0, 'Internet'],
+      entry(`${year}-${mm}-05`, 'Weekly food shop', [['5210', d(142.37), 0], ['2110', 0, d(142.37)]]),
+      entry(`${year}-${mm}-12`, 'Electricity & broadband', [
+        ['5130', d(85.2), 0, 'Electricity'],
+        ['5130', d(60), 0, 'Broadband'],
         ['1110', 0, d(145.2)],
       ]),
-      entry(`${year}-${mm}-15`, 'Paycheck', [
-        ['1110', d(2980), 0, 'Net deposit'],
-        ['5700', d(720), 0, 'Withholding'],
+      entry(`${year}-${mm}-15`, 'Salary', [
+        ['1110', d(2980), 0, 'Net pay'],
+        ['5700', d(720), 0, 'Income tax'],
         ['5600', d(95), 0, 'Health insurance'],
-        ['1220', d(305), 0, '401(k) contribution'],
+        ['1220', d(305), 0, 'Pension contribution'],
         ['4100', 0, d(4100), 'Gross pay'],
       ]),
       entry(`${year}-${mm}-18`, 'Dinner with friends', [['5220', d(64.5 + m * 3), 0], ['2110', 0, d(64.5 + m * 3)]]),
-      entry(`${year}-${mm}-20`, 'Car loan payment', [
-        ['2220', d(310), 0, 'Principal'],
+      entry(`${year}-${mm}-20`, 'Car loan repayment', [
+        ['2220', d(310), 0, 'Capital'],
         ['5800', d(42), 0, 'Interest'],
         ['1110', 0, d(352)],
       ]),
       entry(`${year}-${mm}-22`, 'Fuel', [['5310', d(48 + m * 2), 0], ['2110', 0, d(48 + m * 2)]]),
-      entry(`${year}-${mm}-26`, 'Pay credit card', [['2110', d(400), 0], ['1110', 0, d(400)]]),
+      entry(`${year}-${mm}-26`, 'Credit card repayment', [['2110', d(400), 0], ['1110', 0, d(400)]]),
       entry(`${year}-${mm}-28`, 'Transfer to savings', [['1120', d(500), 0], ['1110', 0, d(500)]]),
-      entry(`${year}-${mm}-${eom}`, 'Paycheck', [
-        ['1110', d(2980), 0, 'Net deposit'],
-        ['5700', d(720), 0, 'Withholding'],
+      entry(`${year}-${mm}-${eom}`, 'Salary', [
+        ['1110', d(2980), 0, 'Net pay'],
+        ['5700', d(720), 0, 'Income tax'],
         ['5600', d(95), 0, 'Health insurance'],
-        ['1220', d(305), 0, '401(k) contribution'],
+        ['1220', d(305), 0, 'Pension contribution'],
         ['4100', 0, d(4100), 'Gross pay'],
       ]),
       entry(`${year}-${mm}-${eom}`, 'Savings interest', [['1120', d(18 + m), 0], ['4200', 0, d(18 + m)]]),
@@ -151,8 +167,8 @@ export function sampleEntries(): JournalEntry[] {
   }
   entries.push(
     entry(`${year}-02-14`, 'Streaming subscriptions', [['5530', d(27.98), 0], ['2110', 0, d(27.98)]]),
-    entry(`${year}-03-08`, 'Oil change', [['5330', d(79.99), 0], ['1130', 0, d(40)], ['2110', 0, d(39.99)]]),
-    entry(`${year}-03-02`, 'ATM withdrawal', [['1130', d(100), 0], ['1110', 0, d(100)]]),
+    entry(`${year}-03-08`, 'Car service', [['5330', d(79.99), 0], ['1130', 0, d(40)], ['2110', 0, d(39.99)]]),
+    entry(`${year}-03-02`, 'Cash machine withdrawal', [['1130', d(100), 0], ['1110', 0, d(100)]]),
     entry(`${year}-03-25`, 'Quarterly dividend', [['1210', d(132.4), 0], ['4300', 0, d(132.4)]]),
   )
   return entries

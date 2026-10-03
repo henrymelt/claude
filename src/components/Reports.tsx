@@ -11,7 +11,7 @@ type Report = 'trial' | 'balance' | 'income'
 const REPORTS: { id: Report; label: string }[] = [
   { id: 'trial', label: 'Trial balance' },
   { id: 'balance', label: 'Balance sheet' },
-  { id: 'income', label: 'Income statement' },
+  { id: 'income', label: 'Income & expenditure' },
 ]
 
 export function Reports({ data, onOpenLedger }: { data: LedgerData; onOpenLedger: (id: string) => void }) {
@@ -65,7 +65,7 @@ function ReportHeader({ title, subtitle }: { title: string; subtitle: string }) 
 }
 
 const longDate = (d: string) =>
-  d ? new Date(`${d}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : ''
+  d ? new Date(`${d}T00:00:00`).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }) : ''
 
 function TrialBalance({ data, asOf, onOpenLedger }: { data: LedgerData; asOf: string; onOpenLedger: (id: string) => void }) {
   const { accounts, entries, currency } = data
@@ -188,7 +188,7 @@ function BalanceSheet({ data, asOf, onOpenLedger }: { data: LedgerData; asOf: st
       <table className="w-full text-sm">
         <Section type="asset" {...common} />
         <Section type="liability" {...common} />
-        <Section type="equity" {...common} extra={{ label: 'Net income to date (unclosed)', amount: s.retained }} />
+        <Section type="equity" {...common} extra={{ label: 'Surplus to date (not yet closed)', amount: s.retained }} />
         <tbody>
           <tr className="border-t-2 border-slate-400 font-semibold">
             <td className="px-6 py-2">Total liabilities &amp; equity</td>
@@ -219,13 +219,13 @@ function IncomeStatement({ data, from, to, onOpenLedger }: { data: LedgerData; f
 
   return (
     <Card>
-      <ReportHeader title="Income statement" subtitle={`${longDate(from) || 'Beginning'} – ${longDate(to) || 'today'}`} />
+      <ReportHeader title="Income & expenditure" subtitle={`${longDate(from) || 'Beginning'} – ${longDate(to) || 'today'}`} />
       <table className="w-full text-sm">
         <Section type="income" {...common} />
         <Section type="expense" {...common} />
         <tbody>
           <tr className="border-t-2 border-slate-400 font-semibold">
-            <td className="px-6 py-2">{net >= 0 ? 'Net income (saved)' : 'Net loss (overspent)'}</td>
+            <td className="px-6 py-2">{net >= 0 ? 'Surplus (saved)' : 'Deficit (overspent)'}</td>
             <td className={`num px-6 py-2 underline decoration-double underline-offset-4 ${net < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
               {formatAccounting(net, currency)}
             </td>

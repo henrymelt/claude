@@ -126,7 +126,7 @@ export function accountTree(accounts: Account[]): TreeRow[] {
   return rows
 }
 
-/** Full path label, e.g. "Assets › Cash & Bank › Checking". */
+/** Full path label, e.g. "Assets › Cash & Bank › Current Account". */
 export function accountPath(account: Account, accounts: Account[]): string {
   const byId = new Map(accounts.map((a) => [a.id, a]))
   const parts = [account.name]

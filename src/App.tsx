@@ -262,7 +262,7 @@ export default function App() {
             setDialog(null)
           }}
         >
-          <p>Adds three months of example transactions: paychecks, rent, groceries, a car loan and more.</p>
+          <p>Adds three months of example transactions: salary, rent, food shopping, a car loan and more.</p>
           {data.entries.length > 0 && !data.sample && (
             <p className="font-medium text-rose-700">
               This replaces your {data.entries.length} journal entries. Export a backup first if you want to keep them.

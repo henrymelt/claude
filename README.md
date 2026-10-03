@@ -7,8 +7,9 @@ A personal finance tracker built on **double-entry bookkeeping**. Every transact
 - **Chart of accounts**: a hierarchical tree of Assets (1xxx), Liabilities (2xxx), Equity (3xxx), Income (4xxx) and Expenses (5xxx) with rolled-up balances, normal-balance indicators, search, type filters, sub-accounts, archiving and deletion of unused accounts.
 - **Journal**: multi-line (split) entries with live debit/credit totals, a one-click "balance" helper and strict validation. The list uses the traditional journal layout, with credits indented under debits.
 - **General ledger**: per-account (or per-group) postings with a running balance, counter-accounts, a date-range opening balance and a T-account summary.
-- **Reports**: trial balance, balance sheet (with unclosed net income) and income statement (with savings rate), all for any date or period.
+- **Reports**: trial balance, balance sheet (with unclosed net income) and income & expenditure (with surplus and savings rate), all for any date or period.
 - **Data**: stored in the browser's `localStorage`. JSON export/import, sample data on first visit, currency selection.
+- **British English** throughout: account names (current account, pension, car loan), sample entries and date formats.
 - **How it works**: a built-in guide with the debit/credit rules and common example entries.
 
 Amounts are stored as integer cents, so there is no floating-point drift.

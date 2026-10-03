@@ -18,7 +18,7 @@ const formatters = new Map<string, Intl.NumberFormat>()
 export function formatMoney(cents: number, currency = 'CAD'): string {
   let f = formatters.get(currency)
   if (!f) {
-    f = new Intl.NumberFormat(undefined, { style: 'currency', currency, currencyDisplay: 'narrowSymbol' })
+    f = new Intl.NumberFormat('en-GB', { style: 'currency', currency, currencyDisplay: 'narrowSymbol' })
     formatters.set(currency, f)
   }
   return f.format(cents / 100)
